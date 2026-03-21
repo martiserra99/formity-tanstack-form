@@ -1,4 +1,4 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 
 import {
@@ -15,6 +15,8 @@ import { NumberInput } from "../components/input/number-input";
 import { NextButton } from "../components/buttons/next-button";
 import { BackButton } from "../components/buttons/back-button";
 
+import { useMultiStep } from "../multi-step";
+
 interface FormYourselfProps {
   values: {
     name: string;
@@ -24,38 +26,73 @@ interface FormYourselfProps {
 }
 
 export function FormYourself({ values }: FormYourselfProps) {
+  const { onNext } = useMultiStep();
+  const form = useForm({
+    defaultValues: values,
+    validators: {
+      onSubmit: z.object({
+        name: z
+          .string()
+          .min(1, { message: "Required" })
+          .max(20, { message: "Must be at most 20 characters" }),
+        surname: z
+          .string()
+          .min(1, { message: "Required" })
+          .max(20, { message: "Must be at most 20 characters" }),
+        age: z
+          .number()
+          .min(18, { message: "Minimum of 18 years old" })
+          .max(99, { message: "Maximum of 99 years old" }),
+      }),
+    },
+    onSubmit: async ({ value }) => onNext(value),
+  });
   return (
     <FormStep
-      defaultValues={values}
-      resolver={zodResolver(
-        z.object({
-          name: z
-            .string()
-            .min(1, { message: "Required" })
-            .max(20, { message: "Must be at most 20 characters" }),
-          surname: z
-            .string()
-            .min(1, { message: "Required" })
-            .max(20, { message: "Must be at most 20 characters" }),
-          age: z
-            .number()
-            .min(18, { message: "Minimum of 18 years old" })
-            .max(99, { message: "Maximum of 99 years old" }),
-        }),
-      )}
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
     >
       <FormStepContent>
         <FormStepHeading>Tell us about yourself</FormStepHeading>
         <FormStepInputs>
           <FormStepRow>
-            <TextInput name="name" label="Name" placeholder="Your name" />
-            <TextInput
-              name="surname"
-              label="Surname"
-              placeholder="Your surname"
-            />
+            <form.Field name="name">
+              {(field) => (
+                <TextInput
+                  label="Name"
+                  value={field.state.value}
+                  placeholder="Your name"
+                  onChange={field.handleChange}
+                  error={field.state.meta.errors[0]?.message}
+                />
+              )}
+            </form.Field>
+            <form.Field name="surname">
+              {(field) => (
+                <TextInput
+                  label="Surname"
+                  value={field.state.value}
+                  placeholder="Your surname"
+                  onChange={field.handleChange}
+                  error={field.state.meta.errors[0]?.message}
+                />
+              )}
+            </form.Field>
           </FormStepRow>
-          <NumberInput name="age" label="Age" placeholder="Your age" />
+          <form.Field name="age">
+            {(field) => (
+              <NumberInput
+                label="Age"
+                value={field.state.value}
+                placeholder="Your age"
+                onChange={field.handleChange}
+                error={field.state.meta.errors[0]?.message}
+              />
+            )}
+          </form.Field>
         </FormStepInputs>
         <NextButton>Next</NextButton>
       </FormStepContent>
@@ -70,29 +107,44 @@ interface FormSoftwareDeveloperProps {
 }
 
 export function FormSoftwareDeveloper({ values }: FormSoftwareDeveloperProps) {
+  const { onNext } = useMultiStep();
+  const form = useForm({
+    defaultValues: values,
+    validators: {
+      onSubmit: z.object({
+        softwareDeveloper: z.string(),
+      }),
+    },
+    onSubmit: async ({ value }) => onNext(value),
+  });
   return (
     <FormStep
-      defaultValues={values}
-      resolver={zodResolver(
-        z.object({
-          softwareDeveloper: z.string(),
-        }),
-      )}
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
     >
       <FormStepContent>
         <FormStepHeading>Are you a software developer?</FormStepHeading>
         <FormStepInputs>
-          <Select
-            name="softwareDeveloper"
-            label="Software developer"
-            options={[
-              { value: "yes", label: "Yes" },
-              { value: "no", label: "No" },
-            ]}
-          />
+          <form.Field name="softwareDeveloper">
+            {(field) => (
+              <Select
+                label="Software developer"
+                value={field.state.value}
+                options={[
+                  { value: "yes", label: "Yes" },
+                  { value: "no", label: "No" },
+                ]}
+                onChange={field.handleChange}
+                error={field.state.meta.errors[0]?.message}
+              />
+            )}
+          </form.Field>
         </FormStepInputs>
         <FormStepRow>
-          <BackButton>Back</BackButton>
+          <BackButton values={form.state.values}>Back</BackButton>
           <NextButton>Next</NextButton>
         </FormStepRow>
       </FormStepContent>
@@ -107,30 +159,45 @@ interface FormExpertiseProps {
 }
 
 export function FormExpertise({ values }: FormExpertiseProps) {
+  const { onNext } = useMultiStep();
+  const form = useForm({
+    defaultValues: values,
+    validators: {
+      onSubmit: z.object({
+        expertise: z.string(),
+      }),
+    },
+    onSubmit: async ({ value }) => onNext(value),
+  });
   return (
     <FormStep
-      defaultValues={values}
-      resolver={zodResolver(
-        z.object({
-          expertise: z.string(),
-        }),
-      )}
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
     >
       <FormStepContent>
         <FormStepHeading>What is your area of expertise?</FormStepHeading>
         <FormStepInputs>
-          <Select
-            name="expertise"
-            label="Expertise"
-            options={[
-              { value: "frontend", label: "Frontend development" },
-              { value: "backend", label: "Backend development" },
-              { value: "mobile", label: "Mobile development" },
-            ]}
-          />
+          <form.Field name="expertise">
+            {(field) => (
+              <Select
+                label="Expertise"
+                value={field.state.value}
+                options={[
+                  { value: "frontend", label: "Frontend development" },
+                  { value: "backend", label: "Backend development" },
+                  { value: "mobile", label: "Mobile development" },
+                ]}
+                onChange={field.handleChange}
+                error={field.state.meta.errors[0]?.message}
+              />
+            )}
+          </form.Field>
         </FormStepInputs>
         <FormStepRow>
-          <BackButton>Back</BackButton>
+          <BackButton values={form.state.values}>Back</BackButton>
           <NextButton>Submit</NextButton>
         </FormStepRow>
       </FormStepContent>
@@ -145,32 +212,47 @@ interface FormInterestedProps {
 }
 
 export function FormInterested({ values }: FormInterestedProps) {
+  const { onNext } = useMultiStep();
+  const form = useForm({
+    defaultValues: values,
+    validators: {
+      onSubmit: z.object({
+        interested: z.string(),
+      }),
+    },
+    onSubmit: async ({ value }) => onNext(value),
+  });
   return (
     <FormStep
-      defaultValues={values}
-      resolver={zodResolver(
-        z.object({
-          interested: z.string(),
-        }),
-      )}
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
     >
       <FormStepContent>
         <FormStepHeading>
           Are you interested in learning how to code?
         </FormStepHeading>
         <FormStepInputs>
-          <Select
-            name="interested"
-            label="Interested"
-            options={[
-              { value: "yes", label: "Yes, I am interested." },
-              { value: "no", label: "No, it is not for me." },
-              { value: "maybe", label: "Maybe, I am not sure." },
-            ]}
-          />
+          <form.Field name="interested">
+            {(field) => (
+              <Select
+                label="Interested"
+                value={field.state.value}
+                options={[
+                  { value: "yes", label: "Yes, I am interested." },
+                  { value: "no", label: "No, it is not for me." },
+                  { value: "maybe", label: "Maybe, I am not sure." },
+                ]}
+                onChange={field.handleChange}
+                error={field.state.meta.errors[0]?.message}
+              />
+            )}
+          </form.Field>
         </FormStepInputs>
         <FormStepRow>
-          <BackButton>Back</BackButton>
+          <BackButton values={form.state.values}>Back</BackButton>
           <NextButton>Submit</NextButton>
         </FormStepRow>
       </FormStepContent>

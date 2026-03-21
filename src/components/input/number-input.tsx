@@ -1,29 +1,28 @@
 import { useId } from "react";
-import { useFormContext, Controller } from "react-hook-form";
 import { tv } from "tailwind-variants";
 
 interface NumberInputProps {
-  name: string;
   label: string;
+  value: number;
   placeholder: string;
+  onChange: (value: number) => void;
+  error: string | undefined;
 }
 
-export function NumberInput({ name, label, placeholder }: NumberInputProps) {
-  const { control, formState } = useFormContext();
-  const error = formState.errors[name] as { message: string } | undefined;
+export function NumberInput({
+  label,
+  value,
+  placeholder,
+  onChange,
+  error,
+}: NumberInputProps) {
   return (
-    <Controller
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <Input
-          label={label}
-          value={field.value}
-          placeholder={placeholder}
-          onChange={field.onChange}
-          error={error}
-        />
-      )}
+    <Input
+      label={label}
+      value={value}
+      placeholder={placeholder}
+      onChange={onChange}
+      error={error}
     />
   );
 }
@@ -43,7 +42,7 @@ interface InputProps {
   value: number;
   placeholder: string;
   onChange: (value: number) => void;
-  error: { message: string } | undefined;
+  error: string | undefined;
 }
 
 function Input({ label, value, placeholder, onChange, error }: InputProps) {
@@ -61,7 +60,7 @@ function Input({ label, value, placeholder, onChange, error }: InputProps) {
         className={input({ error: !!error })}
       />
       {error && (
-        <p className="mt-2 text-sm font-normal text-red-400">{error.message}</p>
+        <p className="mt-2 text-sm font-normal text-red-400">{error}</p>
       )}
     </div>
   );

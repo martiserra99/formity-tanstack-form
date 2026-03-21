@@ -1,28 +1,17 @@
-import type { ReactNode } from "react";
-import type { DefaultValues, Resolver } from "react-hook-form";
+import type { ReactNode, ComponentProps } from "react";
 
-import { FormProvider, useForm } from "react-hook-form";
-import { useMultiStep } from "@/multi-step";
-
-interface FormStepProps<T extends Record<string, unknown>> {
-  defaultValues: DefaultValues<T>;
-  resolver: Resolver<T>;
+interface FormStepProps {
+  onSubmit: ComponentProps<"form">["onSubmit"];
   children: ReactNode;
 }
 
-export function FormStep<T extends Record<string, unknown>>({
-  defaultValues,
-  resolver,
-  children,
-}: FormStepProps<T>) {
-  const form = useForm({ defaultValues, resolver });
-  const { onNext } = useMultiStep();
+export function FormStep({ onSubmit, children }: FormStepProps) {
   return (
     <form
-      onSubmit={form.handleSubmit(onNext)}
+      onSubmit={onSubmit}
       className="relative flex h-screen w-full items-center justify-center px-4 py-8 font-sans"
     >
-      <FormProvider {...form}>{children}</FormProvider>
+      {children}
     </form>
   );
 }

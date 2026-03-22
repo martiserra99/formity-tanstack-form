@@ -3,12 +3,16 @@ import type { ComponentPropsWithoutRef } from "react";
 import { Button } from "../button";
 import { useMultiStep } from "@/multi-step";
 
-interface BackButtonProps extends ComponentPropsWithoutRef<"button"> {
-  values: Record<string, unknown>;
+interface BackButtonProps<T extends Record<string, unknown>>
+  extends ComponentPropsWithoutRef<"button"> {
+  values: T;
 }
 
-export function BackButton({ values, ...props }: BackButtonProps) {
-  const { onBack } = useMultiStep();
+export function BackButton<T extends Record<string, unknown>>({
+  values,
+  ...props
+}: BackButtonProps<T>) {
+  const { onBack } = useMultiStep<T>();
   return (
     <Button
       type="button"
